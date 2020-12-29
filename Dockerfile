@@ -1,5 +1,6 @@
-# Start from the latest golang base image
-FROM golang
+# Stage - 1
+# Pull Golang base image
+FROM golang AS builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -7,11 +8,15 @@ WORKDIR /app
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . /app/
 
-# Build the Go app
-RUN go build -o NotFound .
+# Build the binary executable file
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o NotFound .
 
-# Expose port 8080 to the outside world
-EXPOSE 8080
+# Stage - 2
+# Pull Scratch base image
+FROM scratch
 
-# Command to run the executable
-CMD ["./NotFound"]
+# Copy binary file from Stage 1 to Stage 2
+COPY --from=builder /app/NotFound /
+
+# Entrypoint for app
+ENTRYPOINT ["/NotFound"]

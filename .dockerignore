@@ -1,7 +1,7 @@
-Dockerfile
+build
 **.gitignore
 **.git
+Dockerfile
 **LICENSE.md
 **README.md
 bin/*
-build
